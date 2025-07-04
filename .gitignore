@@ -1,0 +1,15 @@
+
+# ctf-recon
+hackthebox/ctf-recon.log
+hackthebox/amg.json
+
+# bug-recon
+bug-recon/ctf-scans
+
+# others
+.lh
+discord.json
+target.txt
+templates
+output
+logs
