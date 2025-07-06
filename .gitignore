@@ -1,10 +1,11 @@
 
 # ctf-recon
+hackthebox/ctf-scans
 hackthebox/ctf-recon.log
 hackthebox/amg.json
 
 # bug-recon
-bug-recon/ctf-scans
+bug-recon/scans
 
 # others
 .lh

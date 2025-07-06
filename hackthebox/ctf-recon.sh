@@ -298,6 +298,7 @@ print_final_summary() {
     echo -e "${GREEN}║${RESET}"
     echo -e "${GREEN}║${RESET} Reports Generated:"
     echo -e "${GREEN}║${RESET}   • HTML Report: ${BLUE}$SCAN_DIR/ctf_report.html${RESET}"
+    echo -e "${GREEN}║${RESET}   - ${BLUE}file://$(realpath $SCAN_DIR/ctf_report.html)${RESET}"
     echo -e "${GREEN}║${RESET}   • Markdown Notes: ${BLUE}$SCAN_DIR/ctf_notes.md${RESET}"
     echo -e "${GREEN}║${RESET}   • Text Summary: ${BLUE}$SCAN_DIR/summary.txt${RESET}"
     

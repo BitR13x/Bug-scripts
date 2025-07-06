@@ -284,7 +284,9 @@ cleanup() {
     log "INFO" "Cleaning up..."
     
     # Kill any background processes
-    jobs -p | xargs -r kill &>/dev/null
+    # jobs -p | xargs -r kill &>/dev/null
+    log "INFO" "jobs running:"
+    jobs -p
     
     # Compress scan results
     if [[ -n "$SCAN_DIR" && -d "$SCAN_DIR" ]]; then
