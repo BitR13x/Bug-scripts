@@ -129,7 +129,7 @@
             
             function copyRefreshCommand() {
                 const scanDir = window.location.pathname.split('/').slice(0, -1).join('/');
-                const command = `cp static/refresh_file_viewer.sh ${scanDir}/ && cd ${scanDir} && ./refresh_file_viewer.sh ${scanDir}`;
+                const command = `cd ${scanDir} && ./refresh_file_viewer.sh`;
                 copyToClipboard(command);
             }
             
