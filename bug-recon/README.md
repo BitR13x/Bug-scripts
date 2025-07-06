@@ -1,17 +1,8 @@
-# AutoRecon v2.0 - Enhanced Automated Reconnaissance Tool
+# Currently in development, I'm suggesting to wait until finished
+
+# AutoRecon v2.0
 
 AutoRecon is a comprehensive automated reconnaissance tool designed for security professionals and bug bounty hunters. It performs multi-phase reconnaissance including subdomain enumeration, web service discovery, and vulnerability scanning.
-
-## 🚀 Features
-
-- **Modular Architecture**: Split into focused modules for maintainability
-- **Enhanced Logging**: Structured logging with timestamps and severity levels
-- **Progress Tracking**: Real-time progress indicators for long-running tasks
-- **Rate Limiting**: Built-in rate limiting to avoid overwhelming targets
-- **Comprehensive Reporting**: HTML and JSON reports with interactive features
-- **Dependency Checking**: Automatic validation of required tools
-- **Error Handling**: Robust error handling with cleanup on exit
-- **Performance Optimized**: Parallel processing and efficient resource usage
 
 ## 📋 Prerequisites
 
@@ -49,7 +40,7 @@ go install -v github.com/ffuf/ffuf@latest
 
 ### Module Structure
 ```
-auto/
+bug-recon/
 ├── autorecon.sh           # Main orchestrator script
 ├── config.sh              # Configuration and settings
 ├── utils.sh               # Utility functions and logging
