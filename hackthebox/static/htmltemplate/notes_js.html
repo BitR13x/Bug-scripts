@@ -131,13 +131,13 @@
                 }
                 
                 let exportText = '# CTF Notes Export\\n';
-                exportText += '# Generated: ' + new Date().toLocaleString() + '\\n\\n';
+                exportText += '# Generated: ' + new Date().toLocaleString() + '\n\n';
                 
                 notes.forEach(note => {
-                    exportText += `## ${note.title} [${note.category.toUpperCase()}]\\n`;
-                    exportText += `**Date:** ${note.timestamp}\\n\\n`;
-                    exportText += `${note.content}\\n\\n`;
-                    exportText += '---\\n\\n';
+                    exportText += `## ${note.title} [${note.category.toUpperCase()}]\n`;
+                    exportText += `**Date:** ${note.timestamp}\n\n`;
+                    exportText += `${note.content}\n\n`;
+                    exportText += '---\n\n';
                 });
                 
                 // Create and download file
