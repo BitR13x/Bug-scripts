@@ -130,8 +130,8 @@
                     return;
                 }
                 
-                let exportText = '# CTF Notes Export\\n';
-                exportText += '# Generated: ' + new Date().toLocaleString() + '\n\n';
+                let exportText = '# CTF Notes Export\n';
+                exportText += '- Generated: ' + new Date().toLocaleString() + '\n\n';
                 
                 notes.forEach(note => {
                     exportText += `## ${note.title} [${note.category.toUpperCase()}]\n`;
