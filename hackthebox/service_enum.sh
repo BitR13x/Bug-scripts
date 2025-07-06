@@ -151,11 +151,10 @@ enum_http() {
             if [[ -n "$redirect_location" ]]; then
                 log "INFO" "Redirect Location: $redirect_location"
                 base_url="$protocol://$redirect_location:$port"
-
             fi
 
             if grep -q "$target $redirect_location" "/etc/hosts"; then
-                echo ""
+                echo -n ""
             else
                 echo "$target $redirect_location" | sudo tee -a /etc/hosts >/dev/null
             fi
@@ -183,11 +182,24 @@ enum_http() {
         # Use custom CTF wordlist
         if [[ -n "$redirect_location" ]]; then
             generate_ctf_wordlist "$redirect_location"
+
+            # subdomain enumeration
+            if [[ -f "$CTF_SUBDOMAINS" ]]; then
+                local filter_size=$(curl -X GET --head $base_url -H "Host: doesnotexist1.$redirect_location" -s | grep "Content-Length" | sed "s/Content-Length: //g" | tr -d '\r\n')
+                nohup ffuf -u "$base_url" \
+                    -w "$CTF_SUBDOMAINS" \
+                    -t "$FFUF_THREADS" \
+                    -H "Host: FUZZ.$redirect_location" \
+                    -o "$SCAN_DIR/web/vhost_gobuster_${port}.txt" \
+                    -fs "${filter_size}" -s > /dev/null 2>&1 &
+            else
+                log "WARN" "Missing ${CTF_SUBDOMAINS} wordlist"
+            fi
         else
             generate_ctf_wordlist "$target"
         fi
 
-        ffuf -u "$base_url/FUZZ" \
+        nohup ffuf -u "$base_url/FUZZ" \
             -w "$wordlist" \
             -t "$FFUF_THREADS" \
             -e "php,html,txt,js,xml,json,bak,old,backup" \
@@ -197,7 +209,7 @@ enum_http() {
 
         # Also run with common wordlist
         if [[ -f "$COMMON_WORDLIST" ]]; then
-            ffuf -u "$base_url/FUZZ" \
+            nohup ffuf -u "$base_url/FUZZ" \
                 -w "$COMMON_WORDLIST" \
                 -t "$FFUF_THREADS" \
                 -e "php,html,txt" \
@@ -212,7 +224,7 @@ enum_http() {
 
     # Check robots.txt
     if curl -s --connect-timeout 10 "$base_url/robots.txt" | grep -q "Disallow\|Allow"; then
-        log "FINDING" "robots.txt found on $base_url"
+        log "FINDstarted in the same shell processING" "robots.txt found on $base_url"
         curl -s "$base_url/robots.txt" >"$SCAN_DIR/web/robots_${port}.txt"
         extract_info "$(cat "$SCAN_DIR/web/robots_${port}.txt")" "robots.txt"
     fi
@@ -383,10 +395,18 @@ run_service_enumeration() {
                 enum_ssh "$target" "$port"
                 ;;
             "http")
-                enum_http "$target" "$port" "http"
+                if [[ "$ENABLE_WEB_SCAN" == "true" ]]; then
+                    enum_http "$target" "$port" "http"
+                else
+                    log "WARN" "Skipping http enum: $port"
+                fi
                 ;;
             "https" | "ssl/http")
-                enum_http "$target" "$port" "https"
+                if [[ "$ENABLE_WEB_SCAN" == "true" ]]; then
+                    enum_http "$target" "$port" "https"
+                else
+                    log "WARN" "Skipping https enum: $port"
+                fi
                 ;;
             "microsoft-ds" | "netbios-ssn" | "smb")
                 enum_smb "$target" "$port"
