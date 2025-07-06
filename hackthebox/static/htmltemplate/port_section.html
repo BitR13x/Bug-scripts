@@ -1,0 +1,28 @@
+        <div class="section">
+            <div class="section-header">
+                🔍 Port Scan Results
+                <button class="toggle-btn" onclick="toggleSection('port-details')">Toggle Details</button>
+            </div>
+            <div class="section-content">
+                <table class="port-table">
+                    <thead>
+                        <tr>
+                            <th>Port</th>
+                            <th>State</th>
+                            <th>Service</th>
+                            <th>Version</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{PORT_TABLE_ROWS}}
+                    </tbody>
+                </table>
+                
+                <div id="port-details" class="collapsible">
+                    <h3>Detailed Scan Output</h3>
+                    <div class="code-block">
+{{DETAILED_SCAN_OUTPUT}}
+                    </div>
+                </div>
+            </div>
+        </div>

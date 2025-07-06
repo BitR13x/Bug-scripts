@@ -1,0 +1,55 @@
+            <div class="section">
+            <div class="section-header">
+                <h2 onclick="toggleSection('file-structure-section')">📁 Scan Files & Structure</h2>
+            </div>
+            <div id="file-structure-section" class="section-content">
+                <div class="finding finding-info">
+                    <div class="finding-title">📊 Directory Structure</div>
+                    <div class="finding-content">
+                        <div class="file-toolbar">
+                            <button class="file-btn" onclick="toggleAllFolders()">📂 Expand/Collapse All</button>
+                            <button class="file-btn" onclick="showRefreshInstructions()">📜 Help</button>
+                            <span class="file-info" id="file-count-info">Loading...</span>
+                        </div>
+                        <div class="file-tree" id="file-tree-container">
+                            {{FILE_TREE_CONTENT}}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="finding finding-info">
+                    <div class="finding-title">📖 File Viewer</div>
+                    <div class="finding-content">
+                        <div id="file-viewer">
+                            <p>Click on any file above to view its contents here.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="finding finding-info" id="refresh-instructions" style="display: none;">
+                    <div class="finding-title">📜 File Refresh Instructions</div>
+                    <div class="finding-content">
+                        <p><strong>To update the file viewer when new files are added:</strong></p>
+                        
+                        <div style="background: var(--bg-secondary); padding: 15px; border-radius: 6px; margin: 10px 0; border-left: 4px solid var(--accent-blue);">
+                            <h4>🚀 Quick Update Process</h4>
+                            <p><strong>Step 1:</strong> Run the refresh script in your terminal</p>
+                            <p><strong>Step 2:</strong> Refresh website</p>
+                        </div>
+
+                        <h4>One-Command Update</h4>
+                        <div class="code-block" id="copy-script-command">
+cd {{SCAN_DIR}} && ./refresh_file_viewer.sh
+                        </div>  
+                        <p>After running the refresh script, refresh website:</p>
+
+                        <div class="file-actions">
+                            <button class="copy-btn" onclick="copyRefreshCommand()">📋 Copy Command</button>
+                            <button class="copy-btn" onclick="openRefreshScript()">📄 View Script</button>
+                        </div>
+                        
+                        <p><small><strong>Note:</strong> The refresh script will scan for new files and update the file viewer data. You'll need to refresh the browser page or run the browser console command to see the changes.</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>

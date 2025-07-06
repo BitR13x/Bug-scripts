@@ -1,0 +1,285 @@
+        <!-- Embedded file contents -->
+        <script type="application/json" id="file-contents">
+        {{FILE_CONTENTS_JSON}}
+        </script>
+
+        <script>
+            let fileContents = {};
+            
+            // Load file contents from embedded JSON and generate file structure
+            document.addEventListener('DOMContentLoaded', function() {
+                loadFileContentsAndGenerateStructure();
+            });
+            
+            function loadFileContentsAndGenerateStructure() {
+                try {
+                    const contentScript = document.getElementById('file-contents');
+                    if (contentScript && contentScript.textContent.trim()) {
+                        fileContents = JSON.parse(contentScript.textContent);
+                        generateFileTreeFromJSON();
+                        updateFileCount();
+                        console.log('File structure loaded and generated from embedded JSON');
+                    }
+                } catch (e) {
+                    console.error('Failed to load file contents:', e);
+                }
+            }
+            
+            function generateFileTreeFromJSON() {
+                const container = document.getElementById('file-tree-container');
+                if (!container) return;
+                
+                // Group files by directory
+                const directories = {};
+                const rootFiles = [];
+                
+                Object.keys(fileContents).forEach(fileId => {
+                    const fileData = fileContents[fileId];
+                    if (fileData.dir === 'root') {
+                        rootFiles.push({id: fileId, data: fileData});
+                    } else {
+                        if (!directories[fileData.dir]) {
+                            directories[fileData.dir] = [];
+                        }
+                        directories[fileData.dir].push({id: fileId, data: fileData});
+                    }
+                });
+                
+                // Generate HTML structure
+                let html = '<div class="tree-item folder" onclick="toggleFolder(\'scan-root\')">📁 Scan Directory/</div>';
+                html += '<div id="scan-root" class="tree-content active">';
+                
+                // Add directories
+                Object.keys(directories).forEach(dirName => {
+                    const files = directories[dirName];
+                    html += `    <div class="tree-item folder" onclick="toggleFolder('${dirName}-folder')">📁 ${dirName}/ (${files.length} files)</div>`;
+                    html += `    <div id="${dirName}-folder" class="tree-content">`;
+                    
+                    files.forEach(file => {
+                        const fileSize = getFileSizeDisplay(file.data);
+                        html += `        <div class="tree-item file" onclick="viewFile('${file.id}')">📄 ${file.data.name} (${fileSize})</div>`;
+                    });
+                    
+                    html += '    </div>';
+                });
+                
+                // Add root files
+                rootFiles.forEach(file => {
+                    const fileSize = getFileSizeDisplay(file.data);
+                    html += `    <div class="tree-item file" onclick="viewFile('${file.id}')">📄 ${file.data.name} (${fileSize})</div>`;
+                });
+                
+                html += '</div>';
+                
+                container.innerHTML = html;
+            }
+            
+            function getFileSizeDisplay(fileData) {
+                if (fileData.type === 'text' && fileData.content) {
+                    const sizeBytes = new Blob([fileData.content]).size;
+                    if (sizeBytes < 1024) return sizeBytes + 'B';
+                    if (sizeBytes < 1024 * 1024) return Math.round(sizeBytes / 1024) + 'KB';
+                    return Math.round(sizeBytes / (1024 * 1024)) + 'MB';
+                }
+                return 'N/A';
+            }
+            
+            function updateFileCount() {
+                setTimeout(() => {
+                    const fileCount = Object.keys(fileContents || {}).length;
+                    const fileInfo = document.getElementById('file-count-info');
+                    if (fileInfo) {
+                        fileInfo.textContent = `${fileCount} files available`;
+                    }
+                }, 100);
+            }
+            
+            function toggleFolder(folderId) {
+                const folder = document.getElementById(folderId);
+                if (folder) {
+                    folder.classList.toggle('active');
+                }
+            }
+            
+            function refreshFileStructure() {
+                // Reload from embedded JSON and regenerate structure
+                loadFileContentsAndGenerateStructure();
+                alert('File structure refreshed from embedded data!');
+            }
+            
+            function toggleAllFolders() {
+                const folders = document.querySelectorAll('.tree-content');
+                const allExpanded = Array.from(folders).every(folder => folder.classList.contains('active'));
+                
+                folders.forEach(folder => {
+                    if (allExpanded) {
+                        folder.classList.remove('active');
+                    } else {
+                        folder.classList.add('active');
+                    }
+                });
+            }
+            
+            function showRefreshInstructions() {
+                const instructions = document.getElementById('refresh-instructions');
+                if (instructions) {
+                    instructions.style.display = instructions.style.display === 'none' ? 'block' : 'none';
+                }
+            }
+            
+            function copyRefreshCommand() {
+                const scanDir = window.location.pathname.split('/').slice(0, -1).join('/');
+                const command = `cp static/refresh_file_viewer.sh ${scanDir}/ && cd ${scanDir} && ./refresh_file_viewer.sh ${scanDir}`;
+                copyToClipboard(command);
+            }
+            
+            function updateFileViewerFromFiles() {
+                // Try to load from external file_structure.json if available
+                const loadingBtn = event.target;
+                const originalText = loadingBtn.textContent;
+                loadingBtn.textContent = '⏳ Updating...';
+                loadingBtn.disabled = true;
+                
+                fetch('./file_structure.json')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('External file_structure.json not found');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Update the embedded JSON and regenerate structure
+                        fileContents = data;
+                        const contentScript = document.getElementById('file-contents');
+                        if (contentScript) {
+                            contentScript.textContent = JSON.stringify(data, null, 2);
+                        }
+                        generateFileTreeFromJSON();
+                        updateFileCount();
+                        alert('File viewer updated from external JSON file!');
+                    })
+                    .catch(error => {
+                        console.log('External JSON not found, refreshing from embedded data');
+                        loadFileContentsAndGenerateStructure();
+                        alert('File structure refreshed from embedded data!');
+                    })
+                    .finally(() => {
+                        loadingBtn.textContent = originalText;
+                        loadingBtn.disabled = false;
+                    });
+            }
+            
+            function openRefreshScript() {
+                window.open('static/refresh_file_viewer.sh', '_blank');
+            }
+            
+            function viewFile(fileId) {
+                const viewer = document.getElementById('file-viewer');
+                const fileData = fileContents[fileId];
+                
+                if (!fileData) {
+                    viewer.innerHTML = '<p>File data not found. Try refreshing the file structure.</p>';
+                    return;
+                }
+                
+                const fileName = fileData.name;
+                const filePath = fileData.path;
+                const fileDir = fileData.dir;
+                const content = fileData.content;
+                const fileType = fileData.type;
+                
+                let contentDisplay = '';
+                let actions = '';
+                
+                if (fileType === 'text') {
+                    // Create a safe HTML version of the content
+                    const safeContent = content
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#39;');
+                    
+                    contentDisplay = `<div class="file-content">${safeContent}</div>`;
+                    actions = `
+                        <button class="copy-btn" onclick="copyFileContent('${fileId}')">Copy Content</button>
+                        <button class="copy-btn" onclick="copyToClipboard('cat \\"${filePath}\\"')">Copy View Command</button>
+                    `;
+                } else if (fileType === 'binary') {
+                    contentDisplay = `
+                        <div class="file-content">
+                            <p><strong>Binary file detected.</strong></p>
+                            <p>This file contains binary data and cannot be displayed as text.</p>
+                            <p>Use appropriate tools to analyze this file:</p>
+                            <div class="code-block">
+# View file type
+file "${filePath}"
+
+# Hex dump (first 100 bytes)
+xxd "${filePath}" | head -10
+
+# Strings in binary
+strings "${filePath}"
+                            </div>
+                        </div>
+                    `;
+                    actions = `<button class="copy-btn" onclick="copyToClipboard('file \\"${filePath}\\"')">Copy File Command</button>`;
+                } else if (fileType === 'excluded') {
+                    contentDisplay = `
+                        <div class="file-content">
+                            <p><strong>File excluded from viewer.</strong></p>
+                            <p>This file is excluded from the embedded viewer.</p>
+                            <div class="code-block">
+# View file
+cat "${filePath}"
+
+# View with syntax highlighting
+bat "${filePath}"
+                            </div>
+                        </div>
+                    `;
+                    actions = `<button class="copy-btn" onclick="copyToClipboard('cat \\"${filePath}\\"')">Copy View Command</button>`;
+                } else {
+                    contentDisplay = `
+                        <div class="file-content">
+                            <p><strong>File too large to display.</strong></p>
+                            <p>This file is too large to embed in the report.</p>
+                            <div class="code-block">
+# View file
+cat "${filePath}"
+
+# View first/last lines
+head -20 "${filePath}"
+tail -20 "${filePath}"
+
+# Search in file
+grep -i "keyword" "${filePath}"
+                            </div>
+                        </div>
+                    `;
+                    actions = `<button class="copy-btn" onclick="copyToClipboard('cat \\"${filePath}\\"')">Copy View Command</button>`;
+                }
+                
+                const lineCount = fileType === 'text' ? content.split('\n').length : 'N/A';
+                
+                viewer.innerHTML = `
+                    <div class="file-header">
+                        <strong>📄 ${fileName}</strong><br>
+                        <small>Directory: ${fileDir}/</small><br>
+                        <small>Full Path: ${filePath}</small>
+                        <div class="file-stats">Type: ${fileType} | Lines: ${lineCount}</div>
+                    </div>
+                    ${contentDisplay}
+                    <div class="file-actions">
+                        ${actions}
+                    </div>
+                `;
+            }
+            
+            function copyFileContent(fileId) {
+                const fileData = fileContents[fileId];
+                if (fileData && fileData.content) {
+                    copyToClipboard(fileData.content);
+                }
+            }
+        </script>

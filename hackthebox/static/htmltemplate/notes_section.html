@@ -1,0 +1,64 @@
+        <div class="section">
+            <div class="section-header">
+                📝 Notes & Next Steps
+            </div>
+            <div class="section-content">
+                <div class="finding finding-info">
+                    <div class="finding-title">📋 Recommended Next Steps</div>
+                    <div class="finding-content">
+                        1. Review all open ports and services<br>
+                        2. Test default credentials on identified services<br>
+                        3. Perform manual testing on web applications<br>
+                        4. Check for known vulnerabilities in identified software versions<br>
+                        5. Attempt privilege escalation techniques<br>
+                        6. Look for sensitive files and configuration issues
+                    </div>
+                </div>
+                
+                <div class="finding finding-info">
+                    <div class="finding-title">✏️ Personal Notes</div>
+                    <div class="finding-content">
+                        <div class="notes-container">
+                            <div class="notes-toolbar">
+                                <button class="notes-btn" onclick="addNote()">➕ Add Note</button>
+                                <button class="notes-btn" onclick="exportNotes()">💾 Export Notes</button>
+                                <button class="notes-btn" onclick="clearAllNotes()">🗑️ Clear All</button>
+                                <span class="notes-counter">Notes: <span id="notes-count">0</span></span>
+                            </div>
+                            
+                            <div id="notes-list" class="notes-list">
+                                <!-- Notes will be dynamically added here -->
+                            </div>
+                            
+                            <div class="add-note-form" id="add-note-form" style="display: none;">
+                                <div class="form-group">
+                                    <label for="note-title">Title:</label>
+                                    <input type="text" id="note-title" placeholder="Enter note title..." />
+                                </div>
+                                <div class="form-group">
+                                    <label for="note-content">Content:</label>
+                                    <textarea id="note-content" rows="4" placeholder="Enter your notes here..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="note-category">Category:</label>
+                                    <select id="note-category">
+                                        <option value="general">General</option>
+                                        <option value="vulnerability">Vulnerability</option>
+                                        <option value="exploit">Exploit</option>
+                                        <option value="credential">Credentials</option>
+                                        <option value="flag">Flag</option>
+                                        <option value="todo">To-Do</option>
+                                    </select>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="notes-btn save-btn" onclick="saveNote()">💾 Save Note</button>
+                                    <button class="notes-btn cancel-btn" onclick="cancelNote()">❌ Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {{EXISTING_NOTES}}
+            </div>
+        </div>
