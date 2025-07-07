@@ -11,8 +11,7 @@ import os
 import argparse
 import json
 from datetime import datetime
-import threading
-import time
+
 
 class Colors:
     RED = '\033[91m'
