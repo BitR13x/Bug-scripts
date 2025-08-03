@@ -322,7 +322,7 @@ print_banner() {
 
 # Check CTF-specific dependencies
 check_ctf_dependencies() {
-    local tools=("nmap" "gobuster" "nikto" "whatweb" "smbclient" "enum4linux")
+    local tools=("nmap" "ffuf" "nikto" "whatweb" "smbclient" "enum4linux")
     local missing=()
     
     log "INFO" "Checking CTF tool dependencies..."

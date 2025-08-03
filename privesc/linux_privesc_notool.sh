@@ -18,7 +18,7 @@ echo "=================================================="
 echo -e "${NC}"
 
 # Create output directory
-OUTPUT_DIR="${1:-'privesc_results'}"
+OUTPUT_DIR="${1:-privesc_results}"
 mkdir -p "$OUTPUT_DIR"
 
 log_info() {

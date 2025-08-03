@@ -12,8 +12,8 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 # Configuration
-OUTPUT_DIR="${1:-'privesc_results'}"
-TOOLS_DIR="${2:-'/tmp/tools"'}"
+OUTPUT_DIR="${1:-privesc_results}"
+TOOLS_DIR="${2:-/tmp/tools}"
 
 # Tool URLs
 LINPEAS_URL="https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh"
